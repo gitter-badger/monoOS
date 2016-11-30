@@ -1,7 +1,8 @@
 # monoOS
 monoOS is a linux distribution with mono runtimes and framework.
 
-I have problem with mono, can anyone help me?
+I have problem with Compiling Mono Runtime from source, can anyone help me?
+After compile process, it doesn't give a output, directly install it but I want to copy output to the Root Partition Image (root.img)
 
 # Layers
 1. Linux Kernel, Modules and Drivers
