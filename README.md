@@ -1,7 +1,7 @@
 # monoOS
 monoOS is a linux distribution with mono runtimes and framework.
 
-Currently, the Linux kernel and the core is being ready. After this, I will upload them with source codes here.
+I have problem with mono, can anyone help me?
 
 # Layers
 1. Linux Kernel, Modules and Drivers
@@ -14,6 +14,13 @@ Currently, the Linux kernel and the core is being ready. After this, I will uplo
 1. Low-level kernel in Assembly and C++
 2. Low-level Runtime in C++
 3. High-level framework and applications in C#
+
+# Startup Process
+1. Mount necessary mountpoints (/proc, /sys /var)
+2. Initilalize Core (Install busybox, Setup tty, parse parameters)
+3. Mount Root Partition
+4. Check for required applications on it (Busybox, Mono, C#-based Shell application)
+5. Boot to C# code (Mono Runtime)
 
 # Graphical User Interface
 Currently, I dont know how to do this, but I want to use framebuffer and C# Drivers.
