@@ -1,4 +1,6 @@
 # monoOS
+
+[![Join the chat at https://gitter.im/monoOS/Lobby](https://badges.gitter.im/monoOS/Lobby.svg)](https://gitter.im/monoOS/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 monoOS is a linux distribution with mono runtimes and framework.
 
 I have problem with Compiling Mono Runtime from source, can anyone help me?
