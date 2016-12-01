@@ -1,0 +1,37 @@
+#!/bin/sh
+#
+################################
+#                              #
+#  monoOS Startup Script       #
+#                              #
+#  By Mohammad Amin Mollazadeh #
+#                              #
+################################
+#
+
+echo "Starting up..."
+echo "Checking root partition..."
+echo " => Checking for busybox..."
+if [ -f /mnt/bin/busybox ]; then 
+	echo "Found." 
+else
+	echo "Not found, Installing Busybox to new root..." 
+	cp /bin/busybox /mnt/bin/busybox 
+	chroot /mnt /bin/busybox --install 
+fi
+echo " => Checking for mono..."
+if [ -f /mnt/bin/mono ]; then
+	 echo "Found."
+else
+	echo "Mono not found. monoOS can't continue..."
+	return
+fi
+echo " => Checking for " $shell
+if [ -f "/mnt"$shell ]; then
+	echo "OK"
+else
+	echo "Shell application not found. monoOS can't continue..."
+	return
+fi
+echo "Everything is OK! booting into Mono..."
+chroot /mnt /bin/mono $shell

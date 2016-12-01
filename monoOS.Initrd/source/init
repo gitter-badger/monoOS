@@ -1,0 +1,102 @@
+#!/bin/busybox sh
+
+# Functions
+
+welcome_banner()
+{
+	clear
+	echo "Welcome to monoOS!"
+	echo " Now, " $(date)
+	echo
+	echo
+}
+
+# Stage 1: Initializing System...
+PATH=/bin:/sbin; export PATH
+busybox mount -t proc proc /proc
+busybox mount -t sysfs sys /sys
+busybox mkdir /dev/pts
+busybox mount -t devpts -o noexec,nosuid,gid=5,mode=0620 devpts /dev/pts || true
+busybox mount -t tmpfs -o "noexec,nosuid,size=10%,mode=0755" tmpfs /var
+
+# Stage 2: Initializing Core...
+/bin/busybox --install
+welcome_banner
+ln -sf /proc/mounts /etc/mtab
+echo /bin/mdev > /proc/sys/kernel/hotplug
+mdev -s
+echo 0 0 0 0 > /proc/sys/kernel/printk
+mkdir -p /dev/block
+hostname -F /etc/hostname 2>&1 1>/dev/null
+INIT=/init; export INIT;
+ROOT=/dev/sda1; export ROOT;
+quiet=n; export quiet;
+shell=/app/shell.exe; export shell;
+for x in $(cat /proc/cmdline); do
+	case $x in
+	shell=*)
+		shell=${x#shell=}
+		;;
+	init=*)
+		INIT=${x#init=}
+		;;
+	root=*)
+		ROOT=${x#root=}
+		case $ROOT in
+		LABEL=*)
+			ROOT="${ROOT#LABEL=}"
+
+			# support any / in LABEL= path (escape to \x2f)
+			case "${ROOT}" in
+			*/*)
+			if command -v sed >/dev/null 2>&1; then
+				ROOT="$(echo ${ROOT} | sed 's,/,\\x2f,g')"
+			else
+				if [ "${ROOT}" != "${ROOT#/}" ]; then
+					ROOT="\x2f${ROOT#/}"
+				fi
+				if [ "${ROOT}" != "${ROOT%/}" ]; then
+					ROOT="${ROOT%/}\x2f"
+				fi
+				IFS='/'
+				newroot=
+				for s in $ROOT; do
+					newroot="${newroot:+${newroot}\\x2f}${s}"
+				done
+				unset IFS
+				ROOT="${newroot}"
+			fi
+			esac
+			ROOT="/dev/disk/by-label/${ROOT}"
+			;;
+		UUID=*)
+			ROOT="/dev/disk/by-uuid/${ROOT#UUID=}"
+			;;
+		/dev/nfs)
+			[ -z "${BOOT}" ] && BOOT=nfs
+			;;
+		esac
+		;;
+	quiet)
+		quiet=y
+		;;
+	esac
+done
+/etc/init/tty
+alias ls="ls --color"
+alias bb="busybox"
+
+# Stage 3: Root Partition
+mount $ROOT /mnt
+if [ -f /mnt/etc/mono_os_startup ]; then
+	echo "monoOS is ready to startup"
+	openvt -c 5 -ws /etc/init/mstartup
+	openvt -c 2 -ws /etc/init/debug_shell "Can't boot to the C# environment. It may cause by Mono Runtime."
+else
+	umount /mnt
+	openvt -c 2 -ws /etc/init/debug_shell "Can't find root partition."\n"Please check your storage device and system startup configuration."\n"Current Configurations: " $(cat /proc/cmdline);
+fi
+
+# Stage 4: Unmount and shutdown
+echo "Now, it's safe to turn off your pc..." & umount -a
+reboot

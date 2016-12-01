@@ -1,0 +1,9 @@
+#!/bin/sh
+#
+# Debug shell is a script that launchs "ash" with a error message.
+#
+
+echo "monoOS, a C# linux distro"
+echo "Can't launch monoOS:" $1
+echo
+exec ash --login

@@ -1,0 +1,21 @@
+#!/bin/sh
+echo "Initializing tty..."
+#mknod /dev/console c 5 1
+mknod /dev/tty c 5 0
+mknod /dev/tty0 c 4 0
+mknod /dev/tty1 c 4 0
+mknod /dev/tty2 c 4 2
+mknod /dev/tty3 c 4 3
+mknod /dev/tty4 c 4 4
+mknod /dev/tty5 c 4 5
+mknod /dev/tty6 c 4 6
+mknod /dev/tty7 c 4 7
+echo "Testing TTY-N0..." > /dev/tt0
+echo "Testing TTY-N1..." > /dev/tt1
+echo "Testing TTY-N2..." > /dev/tt2
+echo "Testing TTY-N3..." > /dev/tt3
+echo "Testing TTY-N4..." > /dev/tt4
+echo "Testing TTY-N5..." > /dev/tt5
+echo "Testing TTY-N6..." > /dev/tt6
+echo "Testing TTY-N7..." > /dev/tt7
+chvt 7
